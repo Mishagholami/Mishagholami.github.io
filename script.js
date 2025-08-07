@@ -1,5 +1,5 @@
 // Global variables
-let currentColorScheme = 'brown-cream';
+let currentColorScheme = 'deep-ocean-silver'; // Set new default
 let isNavOpen = false;
 let activeSection = 'home';
 
@@ -36,7 +36,8 @@ const projects = [
     fullDescription: "A comprehensive user research study examining LinkedIn's user experience through qualitative methods including user interviews and usability testing.",
     figmaLink: "https://figma.com/linkedin-study",
     pdfReport: "https://example.com/linkedin-report.pdf",
-    hasCaseStudy: true
+    hasCaseStudy: true,
+    caseStudyUrl: "linkedin-case-study.html"
   },
   {
     id: 2,
@@ -69,7 +70,8 @@ const projects = [
     fullDescription: "A complete redesign of the Headspace meditation app focusing on improved accessibility, modern visual design, and enhanced user experience.",
     figmaLink: "https://figma.com/headspace-redesign",
     liveDemo: "https://headspace-redesign.example.com",
-    hasCaseStudy: true
+    hasCaseStudy: true,
+    caseStudyUrl: "headspace-case-study.html"
   },
   {
     id: 3,
@@ -94,7 +96,8 @@ const projects = [
     ],
     fullDescription: "A conceptual mobile application designed to help remote workers integrate wellness practices into their daily work routines.",
     figmaLink: "https://figma.com/wellnesstowork-concept",
-    hasCaseStudy: true
+    hasCaseStudy: true,
+    caseStudyUrl: "wellnest-case-study.html"
   },
   {
     id: 4,
@@ -127,7 +130,8 @@ const projects = [
     fullDescription: "A complete web design and development project showcasing modern frontend technologies and user-centered design principles.",
     liveDemo: "https://kalmont.example.com",
     githubRepo: "https://github.com/mishagholami/kalmont-website",
-    hasCaseStudy: true
+    hasCaseStudy: true,
+    caseStudyUrl: "kalmont-case-study.html"
   },
   {
     id: 5,
@@ -159,7 +163,8 @@ const projects = [
     ],
     fullDescription: "A comprehensive user research study examining how people interact with Granville Island's public spaces to inform future design decisions.",
     pdfReport: "https://example.com/granville-island-research.pdf",
-    hasCaseStudy: true
+    hasCaseStudy: true,
+    caseStudyUrl: "granville-island-case-study.html"
   }
 ];
 
@@ -266,7 +271,9 @@ function updateActiveNavLink() {
     const element = document.getElementById(sectionId);
     if (element) {
       const rect = element.getBoundingClientRect();
-      if (rect.top <= 100 && rect.bottom >= 100) {
+      // Adjust offset for navbar height
+      const offset = 100; 
+      if (rect.top <= offset && rect.bottom >= offset) {
         currentSection = sectionId;
       }
     }
@@ -288,7 +295,7 @@ function updateActiveNavLink() {
 function scrollToSection(sectionId) {
   const element = document.getElementById(sectionId);
   if (element) {
-    const offsetTop = element.offsetTop - 80;
+    const offsetTop = element.offsetTop - 80; // Account for navbar height
     window.scrollTo({
       top: offsetTop,
       behavior: 'smooth'
@@ -322,18 +329,23 @@ function changeColorScheme(scheme) {
 
 function loadColorScheme() {
   const saved = localStorage.getItem('portfolio-color-scheme');
-  if (saved && ['brown-cream', 'sage-mint', 'navy-gold'].includes(saved)) {
+  const validSchemes = ['brown-cream', 'sage-mint', 'navy-gold', 'deep-ocean-silver'];
+  
+  if (saved && validSchemes.includes(saved)) {
     changeColorScheme(saved);
-    
-    // Update active option
-    const schemeOptions = document.querySelectorAll('.scheme-option');
-    schemeOptions.forEach(option => {
-      option.classList.remove('active');
-      if (option.dataset.scheme === saved) {
-        option.classList.add('active');
-      }
-    });
+  } else {
+    // Default to the new professional theme if no valid scheme is saved
+    changeColorScheme('deep-ocean-silver');
   }
+  
+  // Update active option button
+  const schemeOptions = document.querySelectorAll('.scheme-option');
+  schemeOptions.forEach(option => {
+    option.classList.remove('active');
+    if (option.dataset.scheme === currentColorScheme) {
+      option.classList.add('active');
+    }
+  });
 }
 
 // Load projects
@@ -361,11 +373,11 @@ function createProjectCard(project, index) {
   };
   
   const caseStudyColors = {
-    1: 'purple',
-    2: 'purple', 
-    3: 'green',
-    4: 'blue',
-    5: 'teal'
+    1: 'blue', // LinkedIn
+    2: 'purple', // Headspace
+    3: 'green', // Wellnest
+    4: 'blue', // Kalmont (using blue for consistency with original)
+    5: 'teal' // Granville Island
   };
   
   card.innerHTML = `
@@ -419,11 +431,14 @@ function getCategoryIcon(category) {
   return icons[category] || 'circle';
 }
 
-// Open case study (placeholder - would navigate to case study pages)
+// Open case study (redirects to specific HTML files)
 function openCaseStudy(projectId) {
-  // In a real implementation, this would navigate to the case study page
-  console.log(`Opening case study for project ${projectId}`);
-  alert(`Case study for project ${projectId} would open here. In the React version, this navigates to detailed case study pages.`);
+  const project = projects.find(p => p.id === projectId);
+  if (project && project.caseStudyUrl) {
+    window.location.href = project.caseStudyUrl;
+  } else {
+    alert(`Case study for project ${projectId} is not available or linked.`);
+  }
 }
 
 // Open project modal
@@ -443,7 +458,7 @@ function openProjectModal(projectId) {
     <div style="display: grid; gap: 2rem;">
       <!-- Image Gallery -->
       <div>
-        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--accent-800); margin-bottom: 1rem;">Project Visuals</h3>
+        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Project Visuals</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
           ${project.images.map((image, index) => `
             <div style="border-radius: 0.75rem; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
@@ -455,32 +470,32 @@ function openProjectModal(projectId) {
       
       <!-- Project Details -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-        <div style="background: var(--primary-100); padding: 1.5rem; border-radius: 0.75rem;">
+        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 0.75rem;">
           <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <i class="fas fa-target" style="color: var(--accent-600); margin-right: 0.75rem;"></i>
-            <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-800);">Problem & Goals</h4>
+            <i class="fas fa-target" style="color: var(--text-secondary); margin-right: 0.75rem;"></i>
+            <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">Problem & Goals</h4>
           </div>
-          <p style="color: var(--accent-700); line-height: 1.6;">${project.problem}</p>
+          <p style="color: var(--text-secondary); line-height: 1.6;">${project.problem}</p>
         </div>
         
-        <div style="background: var(--primary-100); padding: 1.5rem; border-radius: 0.75rem;">
+        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 0.75rem;">
           <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <i class="fas fa-users" style="color: var(--accent-600); margin-right: 0.75rem;"></i>
-            <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-800);">My Role</h4>
+            <i class="fas fa-users" style="color: var(--text-secondary); margin-right: 0.75rem;"></i>
+            <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">My Role</h4>
           </div>
-          <p style="color: var(--accent-700); line-height: 1.6;">${project.role}</p>
+          <p style="color: var(--text-secondary); line-height: 1.6;">${project.role}</p>
         </div>
       </div>
       
       <!-- Process -->
-      <div style="background: var(--primary-100); padding: 1.5rem; border-radius: 0.75rem;">
-        <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-800); margin-bottom: 1rem;">Design Process</h4>
+      <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 0.75rem;">
+        <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Design Process</h4>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
           ${project.process.map((step, index) => `
-            <div style="background: var(--primary-50); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--accent-200);">
+            <div style="background: var(--bg-primary); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border-main);">
               <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                <span style="width: 1.5rem; height: 1.5rem; background: var(--accent-300); color: var(--accent-800); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 700; margin-right: 0.75rem;">${index + 1}</span>
-                <span style="font-weight: 500; color: var(--accent-800);">${step}</span>
+                <span style="width: 1.5rem; height: 1.5rem; background: var(--border-main); color: var(--text-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 700; margin-right: 0.75rem;">${index + 1}</span>
+                <span style="font-weight: 500; color: var(--text-primary);">${step}</span>
               </div>
             </div>
           `).join('')}
@@ -489,23 +504,23 @@ function openProjectModal(projectId) {
       
       <!-- Outcome & Learnings -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-        <div style="background: var(--primary-100); padding: 1.5rem; border-radius: 0.75rem;">
+        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 0.75rem;">
           <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <i class="fas fa-check-circle" style="color: var(--accent-600); margin-right: 0.75rem;"></i>
-            <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-800);">Outcome</h4>
+            <i class="fas fa-check-circle" style="color: #22c55e; margin-right: 0.75rem;"></i>
+            <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">Outcome</h4>
           </div>
-          <p style="color: var(--accent-700); line-height: 1.6;">${project.outcome}</p>
+          <p style="color: var(--text-secondary); line-height: 1.6;">${project.outcome}</p>
         </div>
         
-        <div style="background: var(--primary-100); padding: 1.5rem; border-radius: 0.75rem;">
+        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 0.75rem;">
           <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <i class="fas fa-lightbulb" style="color: var(--accent-600); margin-right: 0.75rem;"></i>
-            <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-800);">Key Learnings</h4>
+            <i class="fas fa-lightbulb" style="color: var(--text-secondary); margin-right: 0.75rem;"></i>
+            <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">Key Learnings</h4>
           </div>
           <ul style="list-style: none; padding: 0;">
             ${project.learnings.map(learning => `
-              <li style="display: flex; align-items: flex-start; color: var(--accent-700); margin-bottom: 0.5rem;">
-                <span style="width: 0.5rem; height: 0.5rem; background: var(--accent-400); border-radius: 50%; margin-top: 0.5rem; margin-right: 0.75rem; flex-shrink: 0;"></span>
+              <li style="display: flex; align-items: flex-start; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                <span style="width: 0.5rem; height: 0.5rem; background: var(--accent-main); border-radius: 50%; margin-top: 0.5rem; margin-right: 0.75rem; flex-shrink: 0;"></span>
                 ${learning}
               </li>
             `).join('')}
@@ -515,18 +530,18 @@ function openProjectModal(projectId) {
       
       <!-- Technologies -->
       <div>
-        <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--accent-800); margin-bottom: 1rem;">Methods & Technologies</h4>
+        <h4 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Methods & Technologies</h4>
         <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
           ${project.tags.map(tag => `
-            <span style="padding: 0.5rem 1rem; background: var(--accent-200); color: var(--accent-700); border-radius: 9999px; font-weight: 500;">${tag}</span>
+            <span style="padding: 0.5rem 1rem; background: var(--border-main); color: var(--text-secondary); border-radius: 9999px; font-weight: 500;">${tag}</span>
           `).join('')}
         </div>
       </div>
       
       <!-- Links -->
-      <div style="display: flex; flex-wrap: wrap; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--accent-200);">
+      <div style="display: flex; flex-wrap: wrap; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-main);">
         ${project.liveDemo ? `
-          <a href="${project.liveDemo}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          <a href="${project.liveDemo}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="background: #00acc1; color: white;">
             <i class="fas fa-external-link-alt"></i>
             Live Demo
           </a>
@@ -659,32 +674,6 @@ function handleResize() {
     navMenu.classList.remove('active');
     navToggle.classList.remove('active');
     isNavOpen = false;
-  }
-}
-
-// Utility functions
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-function throttle(func, limit) {
-  let inThrottle;
-  return function() {
-    const args = arguments;
-    const context = this;
-    if (!inThrottle) {
-      func.apply(context, args);
-      inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
-    }
   }
 }
 
